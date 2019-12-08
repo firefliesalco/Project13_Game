@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 
 
 public class AdventureClient {
+	
 	public static void main ( String[] args ) {
 		if ( args.length != 2 ) {
 			System.out.println( "Command line arguments: server_address port" );
@@ -26,7 +27,7 @@ public class AdventureClient {
 					toServer.println ( s );
 					s = fromServer.readLine ();
 					if (s==null) {break;}
-					System.out.println ( s );
+					System.out.println(s);
 				}
 				fromServer.close ();
 				toServer.close ();
@@ -38,4 +39,6 @@ public class AdventureClient {
 			}
 		}
 	}
+	
+	
 }

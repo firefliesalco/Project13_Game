@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+
 
 public class Game extends Canvas {
 
@@ -17,7 +19,9 @@ public class Game extends Canvas {
 	private final static int WIDTH = 500, HEIGHT = 500;
 	private boolean running = true;
 	private KeyEvent keyEvent = null;
-
+	private Player player;
+	private ArrayList<Player> playerData = new ArrayList<Player>();
+	
 	public static void main(String[] args) {
 		new Game();
 	}
@@ -75,7 +79,7 @@ public class Game extends Canvas {
 					if (s != null)
 						System.out.println(s);
 					s = null;
-
+					playerData = server.getPlayerData();
 				}
 
 				// Only render once, even if there's a delay or something
