@@ -66,19 +66,18 @@ public class Game extends Canvas {
 				while (tickTime >= targetNSPT) {
 					tick();
 					tickTime -= targetNSPT;
-					System.out.println("2");
+
 					if (keyEvent != null) {
 						toServer.println((String.valueOf(getKeyEvent())));
+						s = fromServer.readLine();
 					}
-					System.out.println("3");
-					s = fromServer.readLine();
-					System.out.println("4");
+
 					if (s != null)
 						System.out.println(s);
 					s = null;
-					System.out.println("5");
+
 				}
-				
+
 				// Only render once, even if there's a delay or something
 				if (renderTime > targetNSPF) {
 					render();
@@ -100,7 +99,6 @@ public class Game extends Canvas {
 	}
 
 	public void tick() {
-		System.out.println("1");
 	}
 
 	/**
@@ -144,8 +142,8 @@ public class Game extends Canvas {
 	}
 
 	public void setKeyEvent(KeyEvent e) {
-		if (keyEvent != null)
-			System.out.println(e.getKeyChar());
+		// if (keyEvent != null)
+		// System.out.println(e.getKeyChar());
 		this.keyEvent = e;
 	}
 

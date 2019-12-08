@@ -9,11 +9,12 @@ public class KeyInput extends KeyAdapter{
 		this.game = game;
 	}
 	
-	public void KeyPressed(KeyEvent e) {
+	public void keyPressed(KeyEvent e) {
+		System.out.println("1");
 		game.setKeyEvent(e);
 	}
 	
-	public void KeyReleased(KeyEvent e) {
+	public void keyReleased(KeyEvent e) {
 		game.setKeyEvent(null);
 	}
 }
