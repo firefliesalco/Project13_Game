@@ -103,7 +103,7 @@ public class Game extends Canvas {
         g.fillRect(0, 0, getWidth(), getHeight());
 
         g.setColor(Color.black);
-        g.drawString("Alex was here", 200, 200);
+        g.drawString("Jacob was here", 200, 200);
 
         //Don't draw stuff after here
         g.dispose();
