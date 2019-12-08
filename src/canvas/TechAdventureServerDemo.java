@@ -1,3 +1,5 @@
+package canvas;
+
 /*
  * This is an example of how to run the adventure server.
  * Your game class parses and responds to input by handling ConnectionEvents.

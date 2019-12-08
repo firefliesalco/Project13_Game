@@ -1,3 +1,5 @@
+package canvas;
+
 public class UnknownConnectionException extends Exception {
 	private long connectionId = 0L;
 

@@ -1,3 +1,5 @@
+package canvas;
+
 public class ConnectionEvent {
 	private ConnectionEventCode code = null;
 	private long connectionID = 0L;
