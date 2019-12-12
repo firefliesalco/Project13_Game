@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Client {
-	private Player player;
 
 	
 	public static void main(String[] args) {
