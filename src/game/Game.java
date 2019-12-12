@@ -112,6 +112,9 @@ public class Game extends Canvas {
 		if (keysHeld[KeyEvent.VK_D]) {
 			keyInput += "d";
         }
+		if(keysHeld[KeyEvent.VK_E]) {
+			keyInput += "e";
+		}
 		toServer.println(keyInput);
 
 		while (fromServer.ready()) {
