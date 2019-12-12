@@ -63,7 +63,6 @@ public class Game extends Canvas {
 			while (running) {
 				long currentTime = System.nanoTime();
 				long deltaTime = currentTime - lastTime; // Change in time from last loop cycle
-
 				renderTime += deltaTime; // Increase render counter
 				tickTime += deltaTime; // Increase tick counter
 
@@ -71,16 +70,24 @@ public class Game extends Canvas {
 				while (tickTime >= targetNSPT) {
 					tick();
 					tickTime -= targetNSPT;
-
 					if (keyEvent != null) {
-						toServer.println((String.valueOf(getKeyEvent())));
+                        toServer.println((String.valueOf(getKeyEvent())));
+                    } else toServer.println("");
+					while (fromServer.ready()) {
 						s = fromServer.readLine();
-						playerData = (ArrayList<Player>) encoder.decodeObj(s);
-					}
 
-					if (s != null) {
-						System.out.println(s);
-					
+						String[] arr = s.split("_");
+						String data = arr[1];
+						switch(arr[0]) {
+							case "update": {
+								playerData = (ArrayList<Player>) encoder.decodeObj(data);
+								break;
+							}
+							case "print": {
+								System.out.println(data);
+								break;
+							}
+						}
 					}
 					s = null;
 					

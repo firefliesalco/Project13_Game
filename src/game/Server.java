@@ -41,7 +41,7 @@ public class Server implements ConnectionListener{
 					
 					
 					for(int i = 0; i < getPlayerIDs().size(); i++) {
-					adventureServer.sendMessage(getPlayerIDs().get(i), encoder.encodeObj(getPlayerData()));
+					adventureServer.sendMessage(getPlayerIDs().get(i), "update_" + encoder.encodeObj(getPlayerData()));
 					}
 					
 					// BEWARE - if you keep this, any user can shutdown the server
