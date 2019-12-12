@@ -87,6 +87,7 @@ public class Game extends Canvas {
 							}
 							case "player":{
 								player = (Player) encoder.decodeObj(data);
+								break;
 							}
 							case "level":{
 								level = (Level) encoder.decodeObj(data);
@@ -155,7 +156,8 @@ public class Game extends Canvas {
 
 		g.setColor(Color.PINK);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		level.render(g, player.getRoomX(), player.getRoomY());
+		if(player!= null)
+			level.render(g, player.getRoomX(), player.getRoomY());
 		//g.setColor(Color.black);
 		//g.drawString("Jacob was here", 200, 200);
 		g.setColor(Color.BLUE);
