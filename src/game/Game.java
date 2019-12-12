@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class Game extends Canvas {
 
 	private JFrame frame;
-	private final static int WIDTH = 500, HEIGHT = 500;
+	private final static int WIDTH = 500, HEIGHT = 500, SEND_DELAY = 5;
 	private boolean running = true;
 	private Player player;
 	private ArrayList<Player> playerData = new ArrayList<Player>();
@@ -25,6 +25,8 @@ public class Game extends Canvas {
 	private long connectionID;
 	private BufferedReader fromServer;
 	private PrintWriter toServer;
+	private int tickCount = 0;
+	
 	
 	private boolean[] keysHeld = new boolean[255];
 	
@@ -100,66 +102,25 @@ public class Game extends Canvas {
 
 	public void tick() throws IOException {
 		String keyInput = "";
-		if (keysHeld[KeyEvent.VK_W]) {
-			keyInput += "w";
-        }
-		if (keysHeld[KeyEvent.VK_A]) {
-			keyInput += "a";
-        }
-		if (keysHeld[KeyEvent.VK_S]) {
-			keyInput += "s";
-        }
-		if (keysHeld[KeyEvent.VK_D]) {
-			keyInput += "d";
-        }
-		if(keysHeld[KeyEvent.VK_E]) {
-			keyInput += "e";
-		}
-		toServer.println(keyInput);
-
-		while (fromServer.ready()) {
-			String s = fromServer.readLine();
-
-			String[] arr = s.split("_");
-			String data = arr[1];
-			switch(arr[0]) {
-				case "update": {
-					playerData = (ArrayList<Player>) encoder.decodeObj(data);
-					break;
-				}
-				case "player":{
-					player = (Player) encoder.decodeObj(data);
-					break;
-				}
-				case "level":{
-					level = (Level) encoder.decodeObj(data);
-					break;
-				}
-				case "print": {
-					System.out.println(data);
-					break;
-				}
+			if(tickCount++ == SEND_DELAY) {
+				tickCount = 0;
+			if (keysHeld[KeyEvent.VK_W]) {
+				keyInput += "w";
+	        }
+			if (keysHeld[KeyEvent.VK_A]) {
+				keyInput += "a";
+	        }
+			if (keysHeld[KeyEvent.VK_S]) {
+				keyInput += "s";
+	        }
+			if (keysHeld[KeyEvent.VK_D]) {
+				keyInput += "d";
+	        }
+			if(keysHeld[KeyEvent.VK_E]) {
+				keyInput += "e";
 			}
 		}
-	}
-
-	/**
-	 * Gets the width of the content pane
-	 * 
-	 * @return
-	 */
-	public int getWidth() {
-		return frame.getContentPane().getWidth();
-	}
-
-	/**
-	 * Gets the height of the content pane
-	 * 
-	 * @return
-	 */
-	public int getHeight() {
-		return frame.getContentPane().getHeight();
-	}
+		}
 
 	public void render() {
 		BufferStrategy bs = this.getBufferStrategy();
