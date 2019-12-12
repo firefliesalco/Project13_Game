@@ -34,7 +34,6 @@ public class Server implements ConnectionListener{
 			switch ( e.getCode ( ) ) {
 				case CONNECTION_ESTABLISHED:
 					playerData.put(e.getConnectionID(), new Player("player"));
-					adventureServer.sendMessage(e.getConnectionID(), "ID_" + encoder.encodeObj(e.getConnectionID()));
 					// What do you do when the connection is established?
 					break;
 				case TRANSMISSION_RECEIVED:
@@ -43,11 +42,13 @@ public class Server implements ConnectionListener{
 					for(char c : e.getData().toCharArray()) {
 						playerData.get(e.getConnectionID()).update(c + "", getPlayerData(), level);
 					}
-					
-					
-					for(int i = 0; i < getPlayerIDs().size(); i++) {
-					adventureServer.sendMessage(getPlayerIDs().get(i), "update_" + encoder.encodeObj(getPlayerData()));
-					adventureServer.sendMessage(getPlayerIDs().get(i), "level_" + encoder.encodeObj(this.level));
+
+
+					for (int i = 0; i < getPlayerIDs().size(); i++) {
+						adventureServer.sendMessage(getPlayerIDs().get(i), "update_" + encoder.encodeObj(getPlayerData()));
+						adventureServer.sendMessage(getPlayerIDs().get(i),
+								"player_" + encoder.encodeObj(playerData.get(e.getConnectionID())));
+						adventureServer.sendMessage(getPlayerIDs().get(i), "level_" + encoder.encodeObj(level));
 					}
 					
 					// BEWARE - if you keep this, any user can shutdown the server
