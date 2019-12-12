@@ -41,7 +41,7 @@ public class Server implements ConnectionListener{
 					//adventureServer.sendMessage ( e.getConnectionID ( ), String.format (
 							  //"MESSAGE RECEIVED: connectionId=%d, data=%s", e.getConnectionID ( ), e.getData ( ) ) );
 					for(char c : e.getData().toCharArray()) {
-						playerData.get(e.getConnectionID()).update(c + "", getPlayerData());
+						playerData.get(e.getConnectionID()).update(c + "", getPlayerData(), level);
 					}
 					
 					
