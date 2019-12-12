@@ -10,7 +10,7 @@ public class KeyInput extends KeyAdapter{
 	}
 	
 	public void keyPressed(KeyEvent e) {
-		System.out.println("1");
+		//System.out.println("1");
 		game.setKeyEvent(e, true);
 	}
 	

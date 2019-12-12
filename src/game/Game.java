@@ -173,7 +173,7 @@ public class Game extends Canvas {
 
 		g.setColor(Color.PINK);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		if(player!= null)
+		if(player!= null && level!=null)
 			level.render(g, player.getRoomX(), player.getRoomY());
 		//g.setColor(Color.black);
 		//g.drawString("Jacob was here", 200, 200);

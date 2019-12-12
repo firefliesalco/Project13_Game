@@ -9,6 +9,7 @@ public class Door implements Serializable{
 		this.sw2 = sw2;
 		this.sw3 = sw3;
 		this.sw4 = sw4;
+	
 	}
 	
 	public boolean isOpen(boolean switch1, boolean switch2, boolean switch3, boolean switch4) {

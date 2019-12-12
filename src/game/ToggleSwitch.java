@@ -13,6 +13,7 @@ public class ToggleSwitch implements Serializable{
 		this.posX = posX;
 		this.posY = posY;
 	}
+
 	
 	public void render(Graphics g) {
 		g.setColor(state ? Color.GREEN:Color.RED);
