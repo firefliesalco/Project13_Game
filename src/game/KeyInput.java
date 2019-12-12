@@ -11,7 +11,7 @@ public class KeyInput extends KeyAdapter{
 	
 	public void keyPressed(KeyEvent e) {
 		//System.out.println("1");
-		game.setKeyEvent(e, true);
+		game.getPlayer().update(e.toString(), game.getPlayerDataList(), game.getLevel());
 	}
 	
 	public void keyReleased(KeyEvent e) {

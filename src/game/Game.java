@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Game extends Canvas {
 
@@ -18,14 +19,15 @@ public class Game extends Canvas {
 	private final static int WIDTH = 500, HEIGHT = 500, SEND_DELAY = 5;
 	private boolean running = true;
 	private Player player;
-	private ArrayList<Player> playerData = new ArrayList<Player>();
+	private ArrayList<Player> playerDataList = new ArrayList<Player>();
+	private HashMap< Long, Player > playerData;
 	private Encoder encoder = new Encoder();
 	private Level level = new Level();
 	private long connectionID;
 	private BufferedReader fromServer;
 	private PrintWriter toServer;
 	private int tickCount = 0;
-
+	private int tickCounter = 0;
 	private boolean[] keysHeld = new boolean[255];
 
 	public static void main(String[] args) {
@@ -41,6 +43,7 @@ public class Game extends Canvas {
 		frame.setLocationRelativeTo(null);
 		frame.add(this);
 		this.addKeyListener(new KeyInput(this));
+		this.player = new Player("game Player");
 		run();
 	}
 
@@ -99,26 +102,35 @@ public class Game extends Canvas {
 	}
 
 	public void tick() throws IOException {
-		String keyInput = "";
-		if (tickCount++ == SEND_DELAY) {
-			tickCount = 0;
-			if (keysHeld[KeyEvent.VK_W]) {
-				keyInput += "w";
+		Packet serverPacket = null;
+		if(tickCounter >= 5) {
+			tickCounter = 0;
+			Packet packet = new Packet(this.player);
+			toServer.println(encoder.encodeObj(packet));
+			
+			while (fromServer.ready()) {    
+	            String s = fromServer.readLine();    
+	            String[] arr = s.split("_");    
+	            String data = arr[1];    
+	            switch(arr[0]) {    
+	                case "ID":{
+	                	Packet cIDpacket = (Packet) encoder.decodeObj(data);
+	                    connectionID = cIDpacket.getCID(); 
+	                    break;
+	                }
+	                case "Packet":{
+	                	serverPacket = (Packet) encoder.decodeObj(data);
+	                	break;
+	                }                
+	            }    
+	        }		
+			if(serverPacket != null) {
+				level = serverPacket.getLevel();
+				playerData = serverPacket.getPlayerData();
+				playerDataList = new ArrayList<Player>(playerData.values());
 			}
-			if (keysHeld[KeyEvent.VK_A]) {
-				keyInput += "a";
-			}
-			if (keysHeld[KeyEvent.VK_S]) {
-				keyInput += "s";
-			}
-			if (keysHeld[KeyEvent.VK_D]) {
-				keyInput += "d";
-			}
-			if (keysHeld[KeyEvent.VK_E]) {
-				keyInput += "e";
-			}
-		}
-		toServer.println(keyInput);
+		}else tickCounter++;
+		
 	}
 
 	public void render() {
@@ -138,8 +150,8 @@ public class Game extends Canvas {
 		// g.setColor(Color.black);
 		// g.drawString("Jacob was here", 200, 200);
 		g.setColor(Color.BLUE);
-		for (int i = 0; i < playerData.size(); i++) {
-			Player p = playerData.get(i);
+		for (int i = 0; i < playerDataList.size(); i++) {
+			Player p = playerDataList.get(i);
 			g.drawString(p.getName() + i + 1, p.getPosX(), p.getPosY() - 10);
 			g.fillRect(p.getPosX(), p.getPosY(), 32, 32);
 		}
@@ -147,6 +159,18 @@ public class Game extends Canvas {
 		g.dispose();
 		bs.show();
 
+	}
+	
+	public Player getPlayer() {
+		return player;
+	}
+	
+	public ArrayList<Player> getPlayerDataList(){
+		return playerDataList;
+	}
+	
+	public Level getLevel() {
+		return level;
 	}
 
 	public void setKeyEvent(KeyEvent e, boolean isPressed) {
