@@ -21,7 +21,7 @@ public class Game extends Canvas {
 	private KeyEvent keyEvent = null;
 	private Player player;
 	private ArrayList<Player> playerData = new ArrayList<Player>();
-	
+	private Encoder encoder = new Encoder();
 	public static void main(String[] args) {
 		new Game();
 	}
@@ -38,6 +38,7 @@ public class Game extends Canvas {
 		run();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void run() {
 
 		// Change these for your target framerate and tickspeed.
@@ -74,12 +75,16 @@ public class Game extends Canvas {
 					if (keyEvent != null) {
 						toServer.println((String.valueOf(getKeyEvent())));
 						s = fromServer.readLine();
+						System.out.println(s);
+						playerData = (ArrayList<Player>) encoder.decodeObj(s);
 					}
 
-					if (s != null)
+					if (s != null) {
 						System.out.println(s);
+					
+					}
 					s = null;
-					playerData = server.getPlayerData();
+					
 				}
 
 				// Only render once, even if there's a delay or something
@@ -136,9 +141,14 @@ public class Game extends Canvas {
 		g.setColor(Color.PINK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
-		g.setColor(Color.black);
-		g.drawString("Jacob was here", 200, 200);
-
+		//g.setColor(Color.black);
+		//g.drawString("Jacob was here", 200, 200);
+		g.setColor(Color.BLUE);
+		for(int i = 0; i < playerData.size(); i++) {
+			Player p = playerData.get(i);
+			
+			g.drawRect(p.getPosX(), p.getPosY(), 32, 32);
+		}
 		// Don't draw stuff after here
 		g.dispose();
 		bs.show();

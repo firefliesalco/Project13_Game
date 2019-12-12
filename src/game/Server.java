@@ -14,6 +14,7 @@ import canvas.UnknownConnectionException;
 public class Server implements ConnectionListener{
 	AdventureServer adventureServer = null;
 	private HashMap< Long, Player > playerData = new HashMap<> ( );
+	private Encoder encoder = new Encoder();
 	public Server ( ) {
 		adventureServer = new AdventureServer ( );
 		adventureServer.setOnTransmission ( this );
@@ -27,16 +28,24 @@ public class Server implements ConnectionListener{
 	public void handle ( ConnectionEvent e ) {
 		System.out.println( "EVENT RECEIVED - YOU MUST PARSE THE DATA AND RESPOND APPROPRIATELY");
 		System.out.println( String.format ( "connectionId=%d, data=%s", e.getConnectionID (), e.getData() ));
+		System.out.println("b4 try");
 		try {
+			System.out.println("RX");
 			switch ( e.getCode ( ) ) {
 				case CONNECTION_ESTABLISHED:
 					playerData.put(e.getConnectionID(), new Player("player"));
 					// What do you do when the connection is established?
 					break;
 				case TRANSMISSION_RECEIVED:
-					adventureServer.sendMessage ( e.getConnectionID ( ), String.format (
-							  "MESSAGE RECEIVED: connectionId=%d, data=%s", e.getConnectionID ( ), e.getData ( ) ) );
+					//adventureServer.sendMessage ( e.getConnectionID ( ), String.format (
+							  //"MESSAGE RECEIVED: connectionId=%d, data=%s", e.getConnectionID ( ), e.getData ( ) ) );
 					playerData.get(e.getConnectionID()).update(e.getData());
+					
+					
+					for(int i = 0; i < getPlayerIDs().size(); i++) {
+					adventureServer.sendMessage(getPlayerIDs().get(i), encoder.encodeObj(getPlayerData()));
+					}
+					
 					// BEWARE - if you keep this, any user can shutdown the server
 					if ( e.getData ( ).equals ( "SHUTDOWN" ) ) {
 						adventureServer.stopServer ( );
@@ -56,11 +65,16 @@ public class Server implements ConnectionListener{
 
 	
 	public ArrayList<Player> getPlayerData() {
-		return (ArrayList<Player>) playerData.values();
+		return new ArrayList<Player>(playerData.values());
 	}
 	
+	public ArrayList<Long> getPlayerIDs(){
+		return new ArrayList<Long> (playerData.keySet());
+	}
+	
+	
 	public static void main ( String[] args ) {
-		TechAdventureServerDemo techAdventureServerDemo = new TechAdventureServerDemo ();
-		techAdventureServerDemo.start ( 2112 );
+		Server server = new Server();
+		server.start ( 2112 );
 	}
 }

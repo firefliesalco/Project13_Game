@@ -28,6 +28,7 @@ public class TechAdventureServerDemo implements ConnectionListener {
 				case TRANSMISSION_RECEIVED:
 					adventureServer.sendMessage ( e.getConnectionID ( ), String.format (
 							  "MESSAGE RECEIVED: connectionId=%d, data=%s", e.getConnectionID ( ), e.getData ( ) ) );
+					
 					// BEWARE - if you keep this, any user can shutdown the server
 					if ( e.getData ( ).equals ( "SHUTDOWN" ) ) {
 						adventureServer.stopServer ( );
