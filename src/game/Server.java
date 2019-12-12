@@ -40,7 +40,9 @@ public class Server implements ConnectionListener{
 				case TRANSMISSION_RECEIVED:
 					//adventureServer.sendMessage ( e.getConnectionID ( ), String.format (
 							  //"MESSAGE RECEIVED: connectionId=%d, data=%s", e.getConnectionID ( ), e.getData ( ) ) );
-					playerData.get(e.getConnectionID()).update(e.getData(), getPlayerData());
+					for(char c : e.getData().toCharArray()) {
+						playerData.get(e.getConnectionID()).update(c + "", getPlayerData());
+					}
 					
 					
 					for(int i = 0; i < getPlayerIDs().size(); i++) {

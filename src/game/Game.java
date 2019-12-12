@@ -18,12 +18,16 @@ public class Game extends Canvas {
 	private JFrame frame;
 	private final static int WIDTH = 500, HEIGHT = 500;
 	private boolean running = true;
-	private KeyEvent keyEvent = null;
 	private Player player;
 	private ArrayList<Player> playerData = new ArrayList<Player>();
 	private Encoder encoder = new Encoder();
 	private Level level= new Level();
 	private long connectionID;
+	private BufferedReader fromServer;
+	private PrintWriter toServer;
+	
+	private boolean[] keysHeld = new boolean[255];
+	
 	public static void main(String[] args) {
 		new Game();
 	}
@@ -59,9 +63,8 @@ public class Game extends Canvas {
 
 		try (Socket server = new Socket("141.219.226.239", Integer.valueOf(2112))) {
 			System.out.println("Connected to AdventureServer host " + server.getInetAddress());
-			BufferedReader fromServer = new BufferedReader(new InputStreamReader(server.getInputStream()));
-			PrintWriter toServer = new PrintWriter(server.getOutputStream(), true);
-			String s = null;
+			fromServer = new BufferedReader(new InputStreamReader(server.getInputStream()));
+			toServer = new PrintWriter(server.getOutputStream(), true);
 			while (running) {
 				long currentTime = System.nanoTime();
 				long deltaTime = currentTime - lastTime; // Change in time from last loop cycle
@@ -70,36 +73,8 @@ public class Game extends Canvas {
 
 				// Catch up on ticks
 				while (tickTime >= targetNSPT) {
-					tick();
 					tickTime -= targetNSPT;
-					if (keyEvent != null) {
-                        toServer.println((String.valueOf(getKeyEvent())));
-                    } else toServer.println("");
-					while (fromServer.ready()) {
-						s = fromServer.readLine();
-
-						String[] arr = s.split("_");
-						String data = arr[1];
-						switch(arr[0]) {
-							case "update": {
-								playerData = (ArrayList<Player>) encoder.decodeObj(data);
-								break;
-							}
-							case "player":{
-								player = (Player) encoder.decodeObj(data);
-								break;
-							}
-							case "level":{
-								level = (Level) encoder.decodeObj(data);
-								break;
-							}
-							case "print": {
-								System.out.println(data);
-								break;
-							}
-						}
-					}
-					s = null;
+					tick();
 					
 				}
 
@@ -123,7 +98,46 @@ public class Game extends Canvas {
 		}
 	}
 
-	public void tick() {
+	public void tick() throws IOException {
+		String keyInput = "";
+		if (keysHeld[KeyEvent.VK_W]) {
+			keyInput += "w";
+        }
+		if (keysHeld[KeyEvent.VK_A]) {
+			keyInput += "a";
+        }
+		if (keysHeld[KeyEvent.VK_S]) {
+			keyInput += "s";
+        }
+		if (keysHeld[KeyEvent.VK_D]) {
+			keyInput += "d";
+        }
+		toServer.println(keyInput);
+
+		while (fromServer.ready()) {
+			String s = fromServer.readLine();
+
+			String[] arr = s.split("_");
+			String data = arr[1];
+			switch(arr[0]) {
+				case "update": {
+					playerData = (ArrayList<Player>) encoder.decodeObj(data);
+					break;
+				}
+				case "player":{
+					player = (Player) encoder.decodeObj(data);
+					break;
+				}
+				case "level":{
+					level = (Level) encoder.decodeObj(data);
+					break;
+				}
+				case "print": {
+					System.out.println(data);
+					break;
+				}
+			}
+		}
 	}
 
 	/**
@@ -172,13 +186,10 @@ public class Game extends Canvas {
 
 	}
 
-	public void setKeyEvent(KeyEvent e) {
+	public void setKeyEvent(KeyEvent e, boolean isPressed) {
 		// if (keyEvent != null)
 		// System.out.println(e.getKeyChar());
-		this.keyEvent = e;
+		this.keysHeld[e.getKeyCode()] = isPressed;
 	}
-
-	public char getKeyEvent() {
-		return this.keyEvent.getKeyChar();
-	}
+	
 }
