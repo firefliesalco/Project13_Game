@@ -17,16 +17,16 @@ public class Player implements Serializable{
 	public void update(String s) {
 		switch(s) {
 			case "s":
-				posY++;
+				posY+=3;
 				break;	
 			case "d":
-				posX++;
+				posX+=3;
 				break;	
 			case "w":
-				posY--;
+				posY-=3;
 				break;	
 			case "a":
-				posX--;
+				posX-=3;
 				break;
 			default:		
 		}

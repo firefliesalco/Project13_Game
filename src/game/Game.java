@@ -75,7 +75,6 @@ public class Game extends Canvas {
 					if (keyEvent != null) {
 						toServer.println((String.valueOf(getKeyEvent())));
 						s = fromServer.readLine();
-						System.out.println(s);
 						playerData = (ArrayList<Player>) encoder.decodeObj(s);
 					}
 

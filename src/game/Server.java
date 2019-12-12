@@ -28,9 +28,7 @@ public class Server implements ConnectionListener{
 	public void handle ( ConnectionEvent e ) {
 		System.out.println( "EVENT RECEIVED - YOU MUST PARSE THE DATA AND RESPOND APPROPRIATELY");
 		System.out.println( String.format ( "connectionId=%d, data=%s", e.getConnectionID (), e.getData() ));
-		System.out.println("b4 try");
 		try {
-			System.out.println("RX");
 			switch ( e.getCode ( ) ) {
 				case CONNECTION_ESTABLISHED:
 					playerData.put(e.getConnectionID(), new Player("player"));
