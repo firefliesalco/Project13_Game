@@ -12,7 +12,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-
 public class Game extends Canvas {
 
 	private JFrame frame;
@@ -21,15 +20,14 @@ public class Game extends Canvas {
 	private Player player;
 	private ArrayList<Player> playerData = new ArrayList<Player>();
 	private Encoder encoder = new Encoder();
-	private Level level= new Level();
+	private Level level = new Level();
 	private long connectionID;
 	private BufferedReader fromServer;
 	private PrintWriter toServer;
 	private int tickCount = 0;
-	
-	
+
 	private boolean[] keysHeld = new boolean[255];
-	
+
 	public static void main(String[] args) {
 		new Game();
 	}
@@ -77,7 +75,7 @@ public class Game extends Canvas {
 				while (tickTime >= targetNSPT) {
 					tickTime -= targetNSPT;
 					tick();
-					
+
 				}
 
 				// Only render once, even if there's a delay or something
@@ -102,25 +100,26 @@ public class Game extends Canvas {
 
 	public void tick() throws IOException {
 		String keyInput = "";
-			if(tickCount++ == SEND_DELAY) {
-				tickCount = 0;
+		if (tickCount++ == SEND_DELAY) {
+			tickCount = 0;
 			if (keysHeld[KeyEvent.VK_W]) {
 				keyInput += "w";
-	        }
+			}
 			if (keysHeld[KeyEvent.VK_A]) {
 				keyInput += "a";
-	        }
+			}
 			if (keysHeld[KeyEvent.VK_S]) {
 				keyInput += "s";
-	        }
+			}
 			if (keysHeld[KeyEvent.VK_D]) {
 				keyInput += "d";
-	        }
-			if(keysHeld[KeyEvent.VK_E]) {
+			}
+			if (keysHeld[KeyEvent.VK_E]) {
 				keyInput += "e";
 			}
 		}
-		}
+		toServer.println(keyInput);
+	}
 
 	public void render() {
 		BufferStrategy bs = this.getBufferStrategy();
@@ -134,14 +133,14 @@ public class Game extends Canvas {
 
 		g.setColor(Color.PINK);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		if(player!= null && level!=null)
+		if (player != null && level != null)
 			level.render(g, player.getRoomX(), player.getRoomY());
-		//g.setColor(Color.black);
-		//g.drawString("Jacob was here", 200, 200);
+		// g.setColor(Color.black);
+		// g.drawString("Jacob was here", 200, 200);
 		g.setColor(Color.BLUE);
-		for(int i = 0; i < playerData.size(); i++) {
+		for (int i = 0; i < playerData.size(); i++) {
 			Player p = playerData.get(i);
-			g.drawString(p.getName() + i +1, p.getPosX(), p.getPosY()-10);
+			g.drawString(p.getName() + i + 1, p.getPosX(), p.getPosY() - 10);
 			g.fillRect(p.getPosX(), p.getPosY(), 32, 32);
 		}
 		// Don't draw stuff after here
@@ -155,5 +154,5 @@ public class Game extends Canvas {
 		// System.out.println(e.getKeyChar());
 		this.keysHeld[e.getKeyCode()] = isPressed;
 	}
-	
+
 }
