@@ -3,16 +3,18 @@ package game;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Room implements Serializable{
 	private Door north, south, east, west;
 	private boolean switch1, switch2, switch3, switch4;
+	private ArrayList<ToggleSwitch> switches = new ArrayList<ToggleSwitch>();
 	public Room(int index) {
 		setRoom(index);
-		this.switch1 = false;
-		this.switch2 = false;
-		this.switch3 = false;
-		this.switch4 = false;
+		switches.add(new ToggleSwitch(50,50));
+		switches.add(new ToggleSwitch(350,50));
+		switches.add(new ToggleSwitch(50,350));
+		switches.add(new ToggleSwitch(350,350));
 	}
 	
 	public void setRoom(int index) {
@@ -107,13 +109,12 @@ public class Room implements Serializable{
 	}
 	
 	public void render(Graphics g) {
-		g.setColor(switch1 ? Color.GREEN:Color.RED);
-		g.fillRect(50, 50, 8, 16);
-		g.setColor(switch2 ? Color.GREEN:Color.RED);
-		g.fillRect(350, 50, 8, 16);
-		g.setColor(switch3 ? Color.GREEN:Color.RED);
-		g.fillRect(50, 350, 8, 16);
-		g.setColor(switch4 ? Color.GREEN:Color.RED);
-		g.fillRect(350, 350, 8, 16);
+		for(int i = 0; i < switches.size(); i++) {
+			switches.get(i).render(g);
+		}
+	}
+	
+	public ArrayList<ToggleSwitch> getSwitches(){
+		return switches;
 	}
 }

@@ -13,9 +13,11 @@ public class Player implements Serializable {
 		this.name = name;
 		posX = 100;
 		posY = 100;
+		roomX = 0;
+		roomY = 0;
 	}
 
-	public void update(String s, ArrayList<Player> playerData) {
+	public void update(String s, ArrayList<Player> playerData, Level level) {
 		switch (s) {
 		case "s":
 			posY += 3;
@@ -37,6 +39,12 @@ public class Player implements Serializable {
 			if (intersect(playerData) || posX < 0)
 				posX += 3;
 			break;
+		case "e":
+			ArrayList<ToggleSwitch> switches = level.getRooms()[roomY][roomX].getSwitches();
+			for(int i = 0; i < switches.size(); i++) {
+				if(this.getBounds().intersects(switches.get(i).getBounds()))
+					switches.get(i).setState();
+			}
 		default:
 		}
 

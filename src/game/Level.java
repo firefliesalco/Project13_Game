@@ -21,4 +21,8 @@ public class Level implements Serializable{
 	public void render(Graphics g, int roomX, int roomY) {
 		rooms[roomY][roomX].render(g);
 	}
+	
+	public Room[][] getRooms(){
+		return rooms;
+	}
 }
