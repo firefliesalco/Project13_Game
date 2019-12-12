@@ -22,6 +22,8 @@ public class Game extends Canvas {
 	private Player player;
 	private ArrayList<Player> playerData = new ArrayList<Player>();
 	private Encoder encoder = new Encoder();
+	private Level level= new Level();
+	private long connectionID;
 	public static void main(String[] args) {
 		new Game();
 	}
@@ -55,7 +57,7 @@ public class Game extends Canvas {
 		long renderTime = 0; // Nanoseconds since last render
 		long tickTime = 0; // Nanoseconds since last tick
 
-		try (Socket server = new Socket("141.219.196.51", Integer.valueOf(2112))) {
+		try (Socket server = new Socket("141.219.226.239", Integer.valueOf(2112))) {
 			System.out.println("Connected to AdventureServer host " + server.getInetAddress());
 			BufferedReader fromServer = new BufferedReader(new InputStreamReader(server.getInputStream()));
 			PrintWriter toServer = new PrintWriter(server.getOutputStream(), true);
@@ -81,6 +83,13 @@ public class Game extends Canvas {
 						switch(arr[0]) {
 							case "update": {
 								playerData = (ArrayList<Player>) encoder.decodeObj(data);
+								break;
+							}
+							case "player":{
+								player = (Player) encoder.decodeObj(data);
+							}
+							case "level":{
+								level = (Level) encoder.decodeObj(data);
 								break;
 							}
 							case "print": {
@@ -146,14 +155,14 @@ public class Game extends Canvas {
 
 		g.setColor(Color.PINK);
 		g.fillRect(0, 0, getWidth(), getHeight());
-
+		level.render(g, player.getRoomX(), player.getRoomY());
 		//g.setColor(Color.black);
 		//g.drawString("Jacob was here", 200, 200);
 		g.setColor(Color.BLUE);
 		for(int i = 0; i < playerData.size(); i++) {
 			Player p = playerData.get(i);
-			
-			g.drawRect(p.getPosX(), p.getPosY(), 32, 32);
+			g.drawString(p.getName() + i +1, p.getPosX(), p.getPosY()-10);
+			g.fillRect(p.getPosX(), p.getPosY(), 32, 32);
 		}
 		// Don't draw stuff after here
 		g.dispose();
