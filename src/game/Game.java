@@ -61,7 +61,7 @@ public class Game extends Canvas {
 		long renderTime = 0; // Nanoseconds since last render
 		long tickTime = 0; // Nanoseconds since last tick
 
-		try (Socket server = new Socket(/*"141.219.226.239"*/"141.219.226.194", Integer.valueOf(2112))) {
+		try (Socket server = new Socket("141.219.226.239"/*"141.219.226.194"*/, Integer.valueOf(2112))) {
 			System.out.println("Connected to AdventureServer host " + server.getInetAddress());
 			fromServer = new BufferedReader(new InputStreamReader(server.getInputStream()));
 			toServer = new PrintWriter(server.getOutputStream(), true);
@@ -107,11 +107,19 @@ public class Game extends Canvas {
 			String data = arr[1];
 			switch(arr[0]) {
 				case "update": {
-					playerData = (ArrayList<Player>) encoder.decodeObj(data);
+					System.out.println("update");
+					//playerData = (ArrayList<Player>) encoder.decodeObj(data);
+					break;
+				}
+				case "Packet":{
+					Packet packet = (Packet) encoder.decodeObj(data);
+					level = packet.getLevel();
+					playerData = new ArrayList<Player>(packet.getPlayerData().values());
 					break;
 				}
 				case "player":{
-					player = (Player) encoder.decodeObj(data);
+					Packet packet = (Packet) encoder.decodeObj(data);
+					player = packet.getPlayer();
 					break;
 				}
 				case "level":{
@@ -145,7 +153,7 @@ public class Game extends Canvas {
 		g.setColor(Color.BLUE);
 		for (int i = 0; i < playerData.size(); i++) {
 			Player p = playerData.get(i);
-			g.drawString(p.getName() + i + 1, p.getPosX(), p.getPosY() - 10);
+			g.drawString(p.getName() + i, p.getPosX(), p.getPosY() - 10);
 			g.fillRect(p.getPosX(), p.getPosY(), 32, 32);
 		}
 		// Don't draw stuff after here

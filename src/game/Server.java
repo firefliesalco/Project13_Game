@@ -95,9 +95,13 @@ public class Server implements ConnectionListener{
 				p.update(c + "", playerData.values().stream().collect(Collectors.toList()), level);
 			}
 			
+			Packet packet = new Packet(level, playerData);
 			for (int i = 0; i < getPlayerIDs().size(); i++) {
-				adventureServer.sendMessage(l, "update_" + encoder.encodeObj(getPlayerData()));
-				adventureServer.sendMessage(l, "level_" + encoder.encodeObj(level));
+				adventureServer.sendMessage(getPlayerIDs().get(i), "Packet_" + encoder.encodeObj(packet));
+				Packet playerPacket = new Packet(playerData.get(getPlayerIDs().get(i)));
+				adventureServer.sendMessage(getPlayerIDs().get(i), "player_" + encoder.encodeObj(playerPacket));
+				//adventureServer.sendMessage(l, "update_" + encoder.encodeObj(getPlayerData()));
+				//adventureServer.sendMessage(l, "level_" + encoder.encodeObj(level));
 			}
 		}
 		
