@@ -3,12 +3,15 @@ package game;
 import java.awt.Rectangle;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Player implements Serializable {
 	private String name;
 	private int posX, posY, roomX, roomY;
 	private ArrayList<Object> inventory = new ArrayList<Object>();
-	private boolean spawnCollision = false;;
+	private boolean spawnCollision = false;
+	private boolean[] keysHeld = new boolean[255];
+
 	public Player(String name) {
 		this.name = name;
 		posX = 100;
@@ -17,7 +20,7 @@ public class Player implements Serializable {
 		roomY = 0;
 	}
 
-	public void update(String s, ArrayList<Player> playerData, Level level) {
+	public void update(String s, List<Player> playerData, Level level) {
 		switch (s) {
 		case "s":
 			posY += 3;
@@ -69,11 +72,17 @@ public class Player implements Serializable {
 	public int getRoomY() {
 		return roomY;
 	}
+	public boolean getKeyHeld(int key) {
+		return keysHeld[key];
+	}
+	public void setKeyHeld(int key, boolean val) {
+		keysHeld[key] = val;
+	}
 	public Rectangle getBounds() {
 		return new Rectangle(posX, posY, 32, 32);
 	}
 
-	public boolean intersect(ArrayList<Player> playerData) {
+	public boolean intersect(List<Player> playerData) {
 		for (int i = 0; i < playerData.size(); i++) {
 			if (playerData.get(i) != this) {
 				if (this.getBounds().intersects(playerData.get(i).getBounds()))
