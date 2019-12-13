@@ -18,7 +18,6 @@ public class Player implements Serializable {
 	}
 
 	public void update(String s, ArrayList<Player> playerData, Level level) {
-		System.out.println("update");
 		switch (s) {
 		case "s":
 			posY += 3;

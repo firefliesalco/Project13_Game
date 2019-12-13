@@ -34,33 +34,23 @@ public class Server implements ConnectionListener{
 			switch ( e.getCode ( ) ) {
 				case CONNECTION_ESTABLISHED:
 					playerData.put(e.getConnectionID(), new Player("player"));
-					Packet cIDPacket = new Packet(e.getConnectionID());
-					//adventureServer.sendMessage(e.getConnectionID(), "ID_" + encoder.encodeObj(cIDPacket));
 					// What do you do when the connection is established?
 					break;
 				case TRANSMISSION_RECEIVED:
 					//adventureServer.sendMessage ( e.getConnectionID ( ), String.format (
 							  //"MESSAGE RECEIVED: connectionId=%d, data=%s", e.getConnectionID ( ), e.getData ( ) ) );
-					/*
 					for(char c : e.getData().toCharArray()) {
 						playerData.get(e.getConnectionID()).update(c + "", getPlayerData(), level);
 					}
+
 
 					for (int i = 0; i < getPlayerIDs().size(); i++) {
 						adventureServer.sendMessage(getPlayerIDs().get(i), "update_" + encoder.encodeObj(getPlayerData()));
 						adventureServer.sendMessage(getPlayerIDs().get(i),
 								"player_" + encoder.encodeObj(playerData.get(e.getConnectionID())));
 						adventureServer.sendMessage(getPlayerIDs().get(i), "level_" + encoder.encodeObj(level));
-					}*/
-					
-					Packet playerPacket = (Packet) encoder.decodeObj(e.getData());
-					Player tempPlayer = playerPacket.getPlayer();
-					playerData.replace(e.getConnectionID(), tempPlayer);
-					
-					Packet packet = new Packet(level, playerData);
-					for (int i = 0; i < getPlayerIDs().size(); i++) {
-						adventureServer.sendMessage(getPlayerIDs().get(i), "Packet_" + encoder.encodeObj(packet));
 					}
+					
 					// BEWARE - if you keep this, any user can shutdown the server
 					if ( e.getData ( ).equals ( "SHUTDOWN" ) ) {
 						adventureServer.stopServer ( );
