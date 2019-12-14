@@ -26,7 +26,7 @@ public class Player implements Serializable {
 			posY += 3;
 			if (intersect(playerData))
 				posY -= 3;
-			if (posY > 500 - 64) {
+			if (posY > 500 - 64 - 16) {
 				if (level.getRooms()[roomY][roomX].southOpen()) {
 					posY = 80;
 					roomY++;
@@ -62,7 +62,7 @@ public class Player implements Serializable {
 					roomY--;
 					
 				} else
-					posY -= 3;
+					posY += 3;
 			}
 			break;
 		}
@@ -84,10 +84,17 @@ public class Player implements Serializable {
 
 		case "e":
 			ArrayList<ToggleSwitch> switches = level.getRooms()[roomY][roomX].getSwitches();
+			ArrayList<Item> items = level.getRooms()[roomY][roomX].getItems();
 			for (int i = 0; i < switches.size(); i++) {
 				if (this.getBounds().intersects(switches.get(i).getBounds()))
 					switches.get(i).setState();
 			}
+			for(int i = 0; i < items.size(); i++) {
+				if(this.getBounds().intersects(items.get(i).getBounds())) {
+					
+				}
+			}
+			
 		default:
 		}
 

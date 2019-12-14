@@ -9,6 +9,7 @@ public class Room implements Serializable {
 	private Door north, south, east, west;
 	private boolean switch1, switch2, switch3, switch4;
 	private ArrayList<ToggleSwitch> switches = new ArrayList<ToggleSwitch>();
+	private ArrayList<Item> items = new ArrayList<Item>();
 
 	public Room(int index) {
 		setRoom(index);
@@ -25,6 +26,7 @@ public class Room implements Serializable {
 			this.east = new Door(true, true, true, false);
 			this.west = null;
 			this.south = null;
+			items.add(new Item("Key"));
 			break;
 		case 1:
 			this.north = null;
@@ -114,6 +116,10 @@ public class Room implements Serializable {
 		for (int i = 0; i < switches.size(); i++) {
 			switches.get(i).render(g);
 		}
+		
+		for(int i = 0; i < items.size(); i++) {
+			items.get(i).render(g);
+		}
 
 		if (north != null) {
 			g.setColor(north.isOpen(switches.get(0).getState(), switches.get(1).getState(), switches.get(2).getState(),
@@ -164,5 +170,9 @@ public class Room implements Serializable {
 		if(south == null) return false;
 		return south.isOpen(switches.get(0).getState(), switches.get(1).getState(), switches.get(2).getState(),
 				switches.get(3).getState());
+	}
+
+	public ArrayList<Item> getItems() {
+		return items;
 	}
 }
