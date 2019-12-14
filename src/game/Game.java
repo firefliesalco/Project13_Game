@@ -25,14 +25,13 @@ public class Game extends Canvas {
 	private BufferedReader fromServer;
 	private PrintWriter toServer;
 	private int tickCount = 0;
+	private String[] chat = new String[7];
 
+	private String ip, name;
+	private KeyInput keyInput;
 	private boolean[] keysHeld = new boolean[255];
 
-	public static void main(String[] args) {
-		new Game();
-	}
-
-	public Game() {
+	public Game(String ip, String name) {
 		frame = new JFrame("Assignment 13");
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setVisible(true);
@@ -40,7 +39,9 @@ public class Game extends Canvas {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.add(this);
-		this.addKeyListener(new KeyInput(this));
+		this.addKeyListener(keyInput = new KeyInput(this));
+		this.name = name;
+		this.ip = ip;
 		run();
 	}
 
@@ -61,10 +62,11 @@ public class Game extends Canvas {
 		long renderTime = 0; // Nanoseconds since last render
 		long tickTime = 0; // Nanoseconds since last tick
 
-		try (Socket server = new Socket("141.219.196.51"/* "141.219.226.194" */, Integer.valueOf(2112))) {
+		try (Socket server = new Socket(ip/* "141.219.226.194" */, Integer.valueOf(2112))) {
 			System.out.println("Connected to AdventureServer host " + server.getInetAddress());
 			fromServer = new BufferedReader(new InputStreamReader(server.getInputStream()));
 			toServer = new PrintWriter(server.getOutputStream(), true);
+			toServer.println("name_" + name);
 			while (running) {
 				long currentTime = System.nanoTime();
 				long deltaTime = currentTime - lastTime; // Change in time from last loop cycle
@@ -130,6 +132,8 @@ public class Game extends Canvas {
 				System.out.println(data);
 				break;
 			}
+			case "chat":
+				addMessage(data);
 			}
 		}
 	}
@@ -171,6 +175,13 @@ public class Game extends Canvas {
 				}
 			}
 		}
+		
+		g.setColor(Color.white);
+		for(int i = 0; i < chat.length; i++) {
+			if(chat[i] != null)
+				g.drawString(chat[i], 10, HEIGHT - 60 - 10 * i);
+		}
+		g.drawString(keyInput.msg, 10, HEIGHT - 40);
 		// Don't draw stuff after here
 		g.dispose();
 		bs.show();
@@ -185,6 +196,13 @@ public class Game extends Canvas {
 
 	public void sendMessage(String message) {
 		toServer.println(message);
+	}
+	
+	public void addMessage(String message) {
+		for(int i = chat.length - 1; i > 0; i--) {
+			chat[i] = chat[i-1];
+		}
+		chat[0] = message;
 	}
 
 }

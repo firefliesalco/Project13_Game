@@ -19,6 +19,10 @@ public class Player implements Serializable {
 		roomX = 0;
 		roomY = 0;
 	}
+	
+	public void setName(String s) {
+		this.name = s;
+	}
 
 	public void update(String s, List<Player> playerData, Level level) {
 		switch (s) {
@@ -184,9 +188,9 @@ public class Player implements Serializable {
 	}
 
 	public boolean intersect(List<Player> playerData) {
-		for (int i = 0; i < playerData.size(); i++) {
-			if (playerData.get(i) != this) {
-				if (this.getBounds().intersects(playerData.get(i).getBounds()))
+		for (Player p : playerData) { 
+			if (p != this && p.getRoomX() == roomX && p.getRoomY() == roomY) {
+				if (this.getBounds().intersects(p.getBounds()))
 					return (spawnCollision && true);
 			}
 		}

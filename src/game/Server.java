@@ -123,10 +123,26 @@ public class Server implements ConnectionListener{
 				
 				String[] arr = e.getData().split("_");
 				switch(arr[0]) {
+					case("name"):{
+						playerData.get(e.getConnectionID()).setName(arr[1]);
+						break;
+					}
 					case ("key"):{
 						int code = Integer.parseInt(arr[1]);
 						boolean enabled = Boolean.parseBoolean(arr[2]);
 						playerData.get(e.getConnectionID()).setKeyHeld(code, enabled);
+						break;
+					}
+					case ("chat"):{
+						for(Long l : playerData.keySet()) {
+							try {
+								adventureServer.sendMessage(l, "chat_" + playerData.get(e.getConnectionID()).getName() + ": " + arr[1]);
+							} catch (UnknownConnectionException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+						break;
 					}
 				}
 
