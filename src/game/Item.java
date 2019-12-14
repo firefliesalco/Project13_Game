@@ -16,18 +16,39 @@ public class Item implements Serializable{
 		this.name = name;
 		switch(name) {
 		case "Key":{
-			posX = 225;
-			posY = 225;
+			posX = 125;
+			posY = 325;
 			width = 16;
 			height = 4;
 			color = Color.YELLOW;
+			break;
+		}
+		case "Speed" : {
+			posX = 75;
+			posY = 225;
+			width = 8;
+			height = 16;
+			color = Color.cyan;
+			break;
 		}
 		}
 	}
 	
+	public void setPosX(int posX) {
+		this.posX = posX;
+	}
+	
+	public void setPosY(int posY) {
+		this.posY = posY;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
 	public void render(Graphics g) {
 		g.setColor(color);
-		g.drawRect(posX, posY, width, height);
+		g.fillRect(posX, posY, width, height);
 		g.drawString(name, posX, posY-10);
 		
 	}

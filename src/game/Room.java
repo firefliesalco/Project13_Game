@@ -6,8 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Room implements Serializable {
-	private Door north, south, east, west;
-	private boolean switch1, switch2, switch3, switch4;
+	private Door north, south, east, west, exit;
+	private boolean switch1, switch2, switch3, switch4, exitOpen;
 	private ArrayList<ToggleSwitch> switches = new ArrayList<ToggleSwitch>();
 	private ArrayList<Item> items = new ArrayList<Item>();
 
@@ -26,57 +26,75 @@ public class Room implements Serializable {
 			this.east = new Door(true, true, true, false);
 			this.west = null;
 			this.south = null;
-			items.add(new Item("Key"));
+			this.exit = null;
+			items.add(new Item("Speed"));
 			break;
 		case 1:
 			this.north = null;
 			this.east = null;
 			this.west = null;
 			this.south = new Door(true, true, true, true);
+			this.exit = null;
+			items.add(new Item("Key"));
 			break;
 		case 2:
-			this.north = null;
+			this.north = new Door(true, true, true, true);
 			this.east = new Door(false, false, true, true);
 			this.west = null;
 			this.south = null;
+			this.exit = null;
 			break;
 		case 3:
 			this.north = null;
 			this.east = new Door(true, false, false, true);
 			this.west = new Door(true, true, true, false);
 			this.south = new Door(false, true, true, true);
+			this.exit = null;
 			break;
 		case 4:
 			this.north = new Door(false, true, true, true);
 			this.east = null;
 			this.west = null;
 			this.south = new Door(false, true, false, true);
+			this.exit = null;
 			break;
 		case 5:
 			this.north = new Door(false, true, false, true);
 			this.east = null;
 			this.west = new Door(false, false, true, true);
 			this.south = null;
+			this.exit = null;
 			break;
 		case 6:
 			this.north = null;
 			this.east = null;
 			this.west = new Door(true, false, false, true);
 			this.south = new Door(false, false, false, true);
+			this.exit = null;
 			break;
 		case 7:
 			this.north = new Door(false, false, false, true);
 			this.east = null;
 			this.west = null;
 			this.south = new Door(true, false, true, true);
+			this.exit = null;
 			break;
 		case 8:
 			this.north = new Door(true, false, true, true);
 			this.east = null;
 			this.west = null;
 			this.south = null;
+			exitOpen = false;
+			this.exit = new Door();
+			break;
+		case 9:
+			this.north = null;
+			this.east = null;
+			this.west = null;
+			this.south = null;
 			break;
 		}
+		
 	}
 
 	public void setSwitch1() {
@@ -110,11 +128,20 @@ public class Room implements Serializable {
 	public boolean getSwitch4() {
 		return this.switch4;
 	}
+	
+	public boolean getExitOpen() {
+		return exitOpen;
+	}
 
 	public void render(Graphics g) {
-
+		if(north == null && east == null && west == null && south == null) {
+			g.setColor(Color.BLACK);
+			g.drawString("CONGRATULATIONS", 225, 225);
+			g.drawString("You Have Escaped", 225, 235);
+		}
 		for (int i = 0; i < switches.size(); i++) {
-			switches.get(i).render(g);
+			if(north != null || east != null|| west != null || south != null)
+				switches.get(i).render(g);
 		}
 		
 		for(int i = 0; i < items.size(); i++) {
@@ -140,6 +167,15 @@ public class Room implements Serializable {
 			g.setColor(south.isOpen(switches.get(0).getState(), switches.get(1).getState(), switches.get(2).getState(),
 					switches.get(3).getState()) ? Color.GREEN : Color.RED);
 			g.fillRect(100, 445, 150, 16);
+		}
+		
+		if(exit != null) {
+			g.setColor(Color.GRAY);
+			g.fillRect(225, 225, 50, 50);
+			g.setColor(Color.RED);
+			g.drawString("E X I T", 234, 225);
+			g.setColor(exitOpen ? Color.GREEN : Color.RED);
+			g.fillRect(230, 230, 40, 40);
 		}
 
 	}
@@ -174,5 +210,19 @@ public class Room implements Serializable {
 
 	public ArrayList<Item> getItems() {
 		return items;
+	}
+	
+	public void removeItem(int i) {
+		if (items.get(i).getName().equals("Key")) {
+			exitOpen = true;
+		}
+		items.remove(i);
+	}
+	
+	public void addItem(Item item) {
+		if(item.getName().equals("Key")) {
+			exitOpen = false;
+		}
+		items.add(item);
 	}
 }

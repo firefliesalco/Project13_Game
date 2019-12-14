@@ -4,7 +4,7 @@ import java.awt.Graphics;
 import java.io.Serializable;
 
 public class Level implements Serializable{
-	private Room rooms[][] = new Room[3][3];
+	private Room rooms[][] = new Room[4][4];
 	
 	public Level() {
 		rooms[0][0] = new Room(0);
@@ -16,6 +16,7 @@ public class Level implements Serializable{
 		rooms[0][2] = new Room(6);
 		rooms[1][2] = new Room(7);
 		rooms[2][2] = new Room(8);
+		rooms[3][3] = new Room(9);
 	}
 	
 	public void render(Graphics g, int roomX, int roomY) {

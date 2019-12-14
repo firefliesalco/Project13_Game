@@ -61,7 +61,7 @@ public class Game extends Canvas {
 		long renderTime = 0; // Nanoseconds since last render
 		long tickTime = 0; // Nanoseconds since last tick
 
-		try (Socket server = new Socket("141.219.196.51"/*"141.219.226.194"*/, Integer.valueOf(2112))) {
+		try (Socket server = new Socket("141.219.196.51"/* "141.219.226.194" */, Integer.valueOf(2112))) {
 			System.out.println("Connected to AdventureServer host " + server.getInetAddress());
 			fromServer = new BufferedReader(new InputStreamReader(server.getInputStream()));
 			toServer = new PrintWriter(server.getOutputStream(), true);
@@ -99,37 +99,37 @@ public class Game extends Canvas {
 	}
 
 	public void tick() throws IOException {
-				
+
 		while (fromServer.ready()) {
 			String s = fromServer.readLine();
 
 			String[] arr = s.split("_");
 			String data = arr[1];
-			switch(arr[0]) {
-				case "update": {
-					System.out.println("update");
-					//playerData = (ArrayList<Player>) encoder.decodeObj(data);
-					break;
-				}
-				case "Packet":{
-					Packet packet = (Packet) encoder.decodeObj(data);
-					level = packet.getLevel();
-					playerData = new ArrayList<Player>(packet.getPlayerData().values());
-					break;
-				}
-				case "player":{
-					Packet packet = (Packet) encoder.decodeObj(data);
-					player = packet.getPlayer();
-					break;
-				}
-				case "level":{
-					level = (Level) encoder.decodeObj(data);
-					break;
-				}
-				case "print": {
-					System.out.println(data);
-					break;
-				}
+			switch (arr[0]) {
+			case "update": {
+				System.out.println("update");
+				// playerData = (ArrayList<Player>) encoder.decodeObj(data);
+				break;
+			}
+			case "Packet": {
+				Packet packet = (Packet) encoder.decodeObj(data);
+				level = packet.getLevel();
+				playerData = new ArrayList<Player>(packet.getPlayerData().values());
+				break;
+			}
+			case "player": {
+				Packet packet = (Packet) encoder.decodeObj(data);
+				player = packet.getPlayer();
+				break;
+			}
+			case "level": {
+				level = (Level) encoder.decodeObj(data);
+				break;
+			}
+			case "print": {
+				System.out.println(data);
+				break;
+			}
 			}
 		}
 	}
@@ -147,17 +147,28 @@ public class Game extends Canvas {
 		g.setColor(Color.DARK_GRAY);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.lightGray);
-		g.fillRect(16, 16, getWidth()-32, getHeight()-32);
-		if (player != null && level != null)
+		g.fillRect(16, 16, getWidth() - 32, getHeight() - 32);
+		
+		if (player != null && level != null) {
 			level.render(g, player.getRoomX(), player.getRoomY());
+			if (player.getInventory() != null) {
+				player.getInventory().render(g);
+			}
+		}
+		
 		// g.setColor(Color.black);
 		// g.drawString("Jacob was here", 200, 200);
+		
 		g.setColor(Color.BLUE);
 		for (int i = 0; i < playerData.size(); i++) {
+			g.setColor(Color.BLUE);
 			Player p = playerData.get(i);
-			if(p.getRoomX() == player.getRoomX() && p.getRoomY() == player.getRoomY()) {
-			g.drawString(p.getName() + i, p.getPosX(), p.getPosY() - 10);
-			g.fillRect(p.getPosX(), p.getPosY(), 32, 32);
+			if (p.getRoomX() == player.getRoomX() && p.getRoomY() == player.getRoomY()) {
+				g.drawString(p.getName() + "_" +  (i+1), p.getPosX(), p.getPosY() - 10);
+				g.fillRect(p.getPosX(), p.getPosY(), 32, 32);
+				if (p.getInventory() != null) {
+					p.getInventory().render(g);
+				}
 			}
 		}
 		// Don't draw stuff after here
@@ -175,5 +186,5 @@ public class Game extends Canvas {
 	public void sendMessage(String message) {
 		toServer.println(message);
 	}
-	
+
 }

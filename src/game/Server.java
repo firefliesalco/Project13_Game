@@ -39,7 +39,6 @@ public class Server implements ConnectionListener{
 	
 				long lastTime = System.nanoTime();
 				long tickTime = 0; // Nanoseconds since last tick
-		;
 					while (running) {
 						long currentTime = System.nanoTime();
 						long deltaTime = currentTime - lastTime; // Change in time from last loop cycle
@@ -90,6 +89,9 @@ public class Server implements ConnectionListener{
 			if (p.getKeyHeld(KeyEvent.VK_E)) {
 				keyInput += "e";
 			}
+			if (p.getKeyHeld(KeyEvent.VK_Q)) {
+				keyInput += "q";
+			}
 			
 			for(char c : keyInput.toCharArray()) {
 				p.update(c + "", playerData.values().stream().collect(Collectors.toList()), level);
@@ -136,6 +138,10 @@ public class Server implements ConnectionListener{
 				}
 				break;
 			case CONNECTION_TERMINATED:
+				Player dC = playerData.get(e.getConnectionID());
+				if(dC.getInventory() !=null) {
+					level.getRooms()[dC.getRoomY()][dC.getRoomY()].addItem(dC.getInventory());
+				}
 				playerData.remove(e.getConnectionID());
 				// Cleanup when the connection is terminated.
 				break;
