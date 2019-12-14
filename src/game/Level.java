@@ -10,11 +10,11 @@ public class Level implements Serializable{
 		rooms[0][0] = new Room(0);
 		rooms[1][0] = new Room(1);
 		rooms[2][0] = new Room(2);
-		rooms[1][1] = new Room(3);
+		rooms[0][1] = new Room(3);
 		rooms[1][1] = new Room(4);
-		rooms[1][1] = new Room(5);
-		rooms[2][0] = new Room(6);
-		rooms[2][1] = new Room(7);
+		rooms[2][1] = new Room(5);
+		rooms[0][2] = new Room(6);
+		rooms[1][2] = new Room(7);
 		rooms[2][2] = new Room(8);
 	}
 	

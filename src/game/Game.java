@@ -61,7 +61,7 @@ public class Game extends Canvas {
 		long renderTime = 0; // Nanoseconds since last render
 		long tickTime = 0; // Nanoseconds since last tick
 
-		try (Socket server = new Socket("141.219.226.239"/*"141.219.226.194"*/, Integer.valueOf(2112))) {
+		try (Socket server = new Socket("141.219.196.51"/*"141.219.226.194"*/, Integer.valueOf(2112))) {
 			System.out.println("Connected to AdventureServer host " + server.getInetAddress());
 			fromServer = new BufferedReader(new InputStreamReader(server.getInputStream()));
 			toServer = new PrintWriter(server.getOutputStream(), true);
@@ -144,8 +144,10 @@ public class Game extends Canvas {
 		Graphics g = bs.getDrawGraphics();
 		// Draw stuff here
 
-		g.setColor(Color.PINK);
+		g.setColor(Color.DARK_GRAY);
 		g.fillRect(0, 0, getWidth(), getHeight());
+		g.setColor(Color.lightGray);
+		g.fillRect(16, 16, getWidth()-32, getHeight()-32);
 		if (player != null && level != null)
 			level.render(g, player.getRoomX(), player.getRoomY());
 		// g.setColor(Color.black);
@@ -153,8 +155,10 @@ public class Game extends Canvas {
 		g.setColor(Color.BLUE);
 		for (int i = 0; i < playerData.size(); i++) {
 			Player p = playerData.get(i);
+			if(p.getRoomX() == player.getRoomX() && p.getRoomY() == player.getRoomY()) {
 			g.drawString(p.getName() + i, p.getPosX(), p.getPosY() - 10);
 			g.fillRect(p.getPosX(), p.getPosY(), 32, 32);
+			}
 		}
 		// Don't draw stuff after here
 		g.dispose();
