@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Game extends Canvas {
 
@@ -19,22 +18,20 @@ public class Game extends Canvas {
 	private final static int WIDTH = 500, HEIGHT = 500, SEND_DELAY = 5;
 	private boolean running = true;
 	private Player player;
-	private ArrayList<Player> playerDataList = new ArrayList<Player>();
-	private HashMap< Long, Player > playerData;
+	private ArrayList<Player> playerData = new ArrayList<Player>();
 	private Encoder encoder = new Encoder();
 	private Level level = new Level();
 	private long connectionID;
 	private BufferedReader fromServer;
 	private PrintWriter toServer;
 	private int tickCount = 0;
-	private int tickCounter = 0;
+	private String[] chat = new String[7];
+
+	private String ip, name;
+	private KeyInput keyInput;
 	private boolean[] keysHeld = new boolean[255];
 
-	public static void main(String[] args) {
-		new Game();
-	}
-
-	public Game() {
+	public Game(String ip, String name) {
 		frame = new JFrame("Assignment 13");
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setVisible(true);
@@ -42,8 +39,9 @@ public class Game extends Canvas {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.add(this);
-		this.addKeyListener(new KeyInput(this));
-		this.player = new Player("game Player");
+		this.addKeyListener(keyInput = new KeyInput(this));
+		this.name = name;
+		this.ip = ip;
 		run();
 	}
 
@@ -64,10 +62,11 @@ public class Game extends Canvas {
 		long renderTime = 0; // Nanoseconds since last render
 		long tickTime = 0; // Nanoseconds since last tick
 
-		try (Socket server = new Socket("141.219.226.239", Integer.valueOf(2112))) {
+		try (Socket server = new Socket(ip/* "141.219.226.194" */, Integer.valueOf(2112))) {
 			System.out.println("Connected to AdventureServer host " + server.getInetAddress());
 			fromServer = new BufferedReader(new InputStreamReader(server.getInputStream()));
 			toServer = new PrintWriter(server.getOutputStream(), true);
+			toServer.println("name_" + name);
 			while (running) {
 				long currentTime = System.nanoTime();
 				long deltaTime = currentTime - lastTime; // Change in time from last loop cycle
@@ -102,35 +101,41 @@ public class Game extends Canvas {
 	}
 
 	public void tick() throws IOException {
-		Packet serverPacket = null;
-		if(tickCounter >= 5) {
-			tickCounter = 0;
-			Packet packet = new Packet(this.player);
-			toServer.println(encoder.encodeObj(packet));
-			
-			while (fromServer.ready()) {    
-	            String s = fromServer.readLine();    
-	            String[] arr = s.split("_");    
-	            String data = arr[1];    
-	            switch(arr[0]) {    
-	                case "ID":{
-	                	Packet cIDpacket = (Packet) encoder.decodeObj(data);
-	                    connectionID = cIDpacket.getCID(); 
-	                    break;
-	                }
-	                case "Packet":{
-	                	serverPacket = (Packet) encoder.decodeObj(data);
-	                	break;
-	                }                
-	            }    
-	        }		
-			if(serverPacket != null) {
-				level = serverPacket.getLevel();
-				playerData = serverPacket.getPlayerData();
-				playerDataList = new ArrayList<Player>(playerData.values());
+
+		while (fromServer.ready()) {
+			String s = fromServer.readLine();
+
+			String[] arr = s.split("_");
+			String data = arr[1];
+			switch (arr[0]) {
+			case "update": {
+				System.out.println("update");
+				// playerData = (ArrayList<Player>) encoder.decodeObj(data);
+				break;
 			}
-		}else tickCounter++;
-		
+			case "Packet": {
+				Packet packet = (Packet) encoder.decodeObj(data);
+				level = packet.getLevel();
+				playerData = new ArrayList<Player>(packet.getPlayerData().values());
+				break;
+			}
+			case "player": {
+				Packet packet = (Packet) encoder.decodeObj(data);
+				player = packet.getPlayer();
+				break;
+			}
+			case "level": {
+				level = (Level) encoder.decodeObj(data);
+				break;
+			}
+			case "print": {
+				System.out.println(data);
+				break;
+			}
+			case "chat":
+				addMessage(data);
+			}
+		}
 	}
 
 	public void render() {
@@ -143,40 +148,61 @@ public class Game extends Canvas {
 		Graphics g = bs.getDrawGraphics();
 		// Draw stuff here
 
-		g.setColor(Color.PINK);
+		g.setColor(Color.DARK_GRAY);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		if (player != null && level != null)
+		g.setColor(Color.lightGray);
+		g.fillRect(16, 16, getWidth() - 32, getHeight() - 32);
+		
+		if (player != null && level != null) {
 			level.render(g, player.getRoomX(), player.getRoomY());
+			if (player.getInventory() != null) {
+				player.getInventory().render(g);
+			}
+		}
+		
 		// g.setColor(Color.black);
 		// g.drawString("Jacob was here", 200, 200);
+		
 		g.setColor(Color.BLUE);
-		for (int i = 0; i < playerDataList.size(); i++) {
-			Player p = playerDataList.get(i);
-			g.drawString(p.getName() + i + 1, p.getPosX(), p.getPosY() - 10);
-			g.fillRect(p.getPosX(), p.getPosY(), 32, 32);
+		for (int i = 0; i < playerData.size(); i++) {
+			g.setColor(Color.BLUE);
+			Player p = playerData.get(i);
+			if (p.getRoomX() == player.getRoomX() && p.getRoomY() == player.getRoomY()) {
+				g.drawString(p.getName() + "_" +  (i+1), p.getPosX(), p.getPosY() - 10);
+				g.fillRect(p.getPosX(), p.getPosY(), 32, 32);
+				if (p.getInventory() != null) {
+					p.getInventory().render(g);
+				}
+			}
 		}
+		
+		g.setColor(Color.white);
+		for(int i = 0; i < chat.length; i++) {
+			if(chat[i] != null)
+				g.drawString(chat[i], 10, HEIGHT - 60 - 10 * i);
+		}
+		g.drawString(keyInput.msg, 10, HEIGHT - 40);
 		// Don't draw stuff after here
 		g.dispose();
 		bs.show();
 
-	}
-	
-	public Player getPlayer() {
-		return player;
-	}
-	
-	public ArrayList<Player> getPlayerDataList(){
-		return playerDataList;
-	}
-	
-	public Level getLevel() {
-		return level;
 	}
 
 	public void setKeyEvent(KeyEvent e, boolean isPressed) {
 		// if (keyEvent != null)
 		// System.out.println(e.getKeyChar());
 		this.keysHeld[e.getKeyCode()] = isPressed;
+	}
+
+	public void sendMessage(String message) {
+		toServer.println(message);
+	}
+	
+	public void addMessage(String message) {
+		for(int i = chat.length - 1; i > 0; i--) {
+			chat[i] = chat[i-1];
+		}
+		chat[0] = message;
 	}
 
 }
